@@ -1,0 +1,16 @@
+.idea
+/node_modules/
+build
+.key
+.secret
+/coverage.json
+/coverage/
+/.coverage_artifacts/
+/.coverage_contracts/
+/artifacts/
+/cache/
+/vy/build/
+/yarn-error.log
+/package-lock.json
+/typechain-types/
+/.openzeppelin/
