@@ -89,7 +89,20 @@ def add_liquidity(
         if not self.is_approved[coin][_pool]:
             ERC20(coin).approve(_pool, MAX_UINT256)
             self.is_approved[coin][_pool] = True
-        ERC20(coin).transferFrom(msg.sender, self, _deposit_amounts[0])
+        
+        # ERC20(coin).transferFrom(msg.sender, self, _deposit_amounts[0])
+        _response: Bytes[32] = raw_call(
+                coin,
+                concat(
+                    method_id("transferFrom(address,address,uint256)"),
+                    convert(msg.sender, bytes32),
+                    convert(self, bytes32),
+                    convert(_deposit_amounts[0], bytes32)
+                ),
+                max_outsize=32
+        )
+        if len(_response) != 0:
+            assert convert(_response, bool)
         meta_amounts[0] = _deposit_amounts[0]
 
     for i in range(1, N_ALL_COINS):
@@ -100,7 +113,19 @@ def add_liquidity(
         base_idx: uint256 = i - 1
         coin: address = base_coins[base_idx]
 
-        ERC20(coin).transferFrom(msg.sender, self, amount)
+        # ERC20(coin).transferFrom(msg.sender, self, amount)
+        _response: Bytes[32] = raw_call(
+                coin,
+                concat(
+                    method_id("transferFrom(address,address,uint256)"),
+                    convert(msg.sender, bytes32),
+                    convert(self, bytes32),
+                    convert(amount, bytes32)
+                ),
+                max_outsize=32
+        )
+        if len(_response) != 0:
+            assert convert(_response, bool)
         # Handle potential Tether fees
         if i == N_ALL_COINS - 1:
             base_amounts[base_idx] = ERC20(coin).balanceOf(self)
@@ -136,7 +161,19 @@ def remove_liquidity(
     @param _receiver Address that receives the LP tokens
     @return List of amounts of underlying coins that were withdrawn
     """
-    ERC20(_pool).transferFrom(msg.sender, self, _burn_amount)
+    # ERC20(_pool).transferFrom(msg.sender, self, _burn_amount)
+    _response: Bytes[32] = raw_call(
+            _pool,
+            concat(
+                method_id("transferFrom(address,address,uint256)"),
+                convert(msg.sender, bytes32),
+                convert(self, bytes32),
+                convert(_burn_amount, bytes32)
+            ),
+            max_outsize=32
+    )
+    if len(_response) != 0:
+        assert convert(_response, bool)
 
     min_amounts_base: uint256[BASE_N_COINS] = empty(uint256[BASE_N_COINS])
     amounts: uint256[N_ALL_COINS] = empty(uint256[N_ALL_COINS])
@@ -183,7 +220,19 @@ def remove_liquidity_one_coin(
     @param _receiver Address that receives the LP tokens
     @return Amount of underlying coin received
     """
-    ERC20(_pool).transferFrom(msg.sender, self, _burn_amount)
+    # ERC20(_pool).transferFrom(msg.sender, self, _burn_amount)
+    _response: Bytes[32] = raw_call(
+            _pool,
+            concat(
+                method_id("transferFrom(address,address,uint256)"),
+                convert(msg.sender, bytes32),
+                convert(self, bytes32),
+                convert(_burn_amount, bytes32)
+            ),
+            max_outsize=32
+    )
+    if len(_response) != 0:
+        assert convert(_response, bool)
 
     coin_amount: uint256 = 0
     if i == 0:
@@ -219,7 +268,19 @@ def remove_liquidity_imbalance(
     fee += fee * FEE_IMPRECISION / FEE_DENOMINATOR  # Overcharge to account for imprecision
 
     # Transfer the LP token in
-    ERC20(_pool).transferFrom(msg.sender, self, _max_burn_amount)
+    # ERC20(_pool).transferFrom(msg.sender, self, _max_burn_amount)
+    _response: Bytes[32] = raw_call(
+            _pool,
+            concat(
+                method_id("transferFrom(address,address,uint256)"),
+                convert(msg.sender, bytes32),
+                convert(self, bytes32),
+                convert(_max_burn_amount, bytes32)
+            ),
+            max_outsize=32
+    )
+    if len(_response) != 0:
+        assert convert(_response, bool)
 
     withdraw_base: bool = False
     amounts_base: uint256[BASE_N_COINS] = empty(uint256[BASE_N_COINS])

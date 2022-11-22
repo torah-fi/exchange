@@ -44,6 +44,7 @@ event RemoveLiquidity:
 event RemoveLiquidityOne:
     provider: indexed(address)
     token_amount: uint256
+    coin_index: uint256
     coin_amount: uint256
 
 event RemoveLiquidityImbalance:
@@ -693,7 +694,7 @@ def remove_liquidity_one_coin(
     else:
         assert ERC20(self.coins[1]).transfer(msg.sender, dy)
 
-    log RemoveLiquidityOne(msg.sender, _token_amount, dy)
+    log RemoveLiquidityOne(msg.sender, _token_amount, convert(i, uint256), dy)
 
     return dy
 
